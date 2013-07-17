@@ -1,0 +1,26 @@
+Description: properly create temp files in the /tmp directory instead of
+ falling back to the user's home directory.
+Origin: upstream, http://diracvideo.org/git?p=orc.git;a=commitdiff;h=fbc554f450e37380104e2730d8685caf37abe24c
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/orc/+bug/860847
+
+Index: orc-0.4.14/orc/orccodemem.c
+===================================================================
+--- orc-0.4.14.orig/orc/orccodemem.c	2011-09-27 15:47:16.072593566 -0400
++++ orc-0.4.14/orc/orccodemem.c	2011-09-27 15:47:49.088594410 -0400
+@@ -263,13 +263,13 @@
+   if (tmpdir && orc_code_region_allocate_codemem_dual_map (region,
+         tmpdir, FALSE)) return;
+ 
++  if (orc_code_region_allocate_codemem_dual_map (region,
++        "/tmp", FALSE)) return;
++
+   tmpdir = getenv ("HOME");
+   if (tmpdir && orc_code_region_allocate_codemem_dual_map (region,
+         tmpdir, FALSE)) return;
+ 
+-  if (orc_code_region_allocate_codemem_dual_map (region, "/tmp", FALSE))
+-    return;
+-
+   if (orc_code_region_allocate_codemem_anon_map (region)) return;
+   
+   ORC_ERROR("Failed to create write and exec mmap regions.  This "
